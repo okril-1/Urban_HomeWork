@@ -1,74 +1,48 @@
-class House:
-    def __init__(self, name, floors):
+class Product:
+    def __init__(self, name, weight, category):
         self.name = name
-        self.floors = floors
+        self.weight = weight
+        self.category = category
 
     def __str__(self):
-        return f"Название: {self.name}, кол-во этажей: {self.floors}"
+        return f'{self.name}, {self.weight}, {self.category}'
 
-    def __eq__(self, other):
-        if isinstance(other, House):
-            return self.floors == other.floors
-        return False
+class Shop:
+    __file_name = 'products.txt'
 
-    def __lt__(self, other):
-        if isinstance(other, House):
-            return self.floors < other.floors
-        return NotImplemented
+    def get_products(self):
+        with open(self.__file_name, 'r') as file:
+            return file.read().strip()
 
-    def __le__(self, other):
-        if isinstance(other, House):
-            return self.floors <= other.floors
-        return NotImplemented
+    def add(self, *products):
+        with open(self.__file_name, 'a') as file:
+            for product in products:
+                if self.__check_product(product):
+                    file.write(f'{product}\n')
+                else:
+                    print(f'Продукт {product.name} уже был в магазине, его общий вес теперь равен {product.weight + self.__get_product_weight(product)}')
 
-    def __gt__(self, other):
-        if isinstance(other, House):
-            return self.floors > other.floors
-        return NotImplemented
+    def __check_product(self, product):
+        with open(self.__file_name, 'r') as file:
+            lines = file.readlines()
+            for line in lines:
+                if line.startswith(product.name) and line.endswith(product.category):
+                    return False
+            return True
 
-    def __ge__(self, other):
-        if isinstance(other, House):
-            return self.floors >= other.floors
-        return NotImplemented
+    def __get_product_weight(self, product):
+        with open(self.__file_name, 'r') as file:
+            lines = file.readlines()
+            for line in lines:
+                if line.startswith(product.name) and line.endswith(product.category):
+                    return float(line.split(', ')[1])
+        return 0
 
-    def __ne__(self, other):
-        if isinstance(other, House):
-            return self.floors != other.floors
-        return NotImplemented
+s1 = Shop()
+p1 = Product('Potato', 50.5, 'Vegetables')
+p2 = Product('Spaghetti', 3.4, 'Groceries')
+p3 = Product('Potato', 5.5, 'Vegetables')
 
-    def __add__(self, value):
-        if isinstance(value, int):
-            self.floors += value
-            return self
-        return NotImplemented
+s1.add(p1, p2, p3)
 
-    def __radd__(self, value):
-        return self.__add__(value)
-
-    def __iadd__(self, value):
-        return self.__add__(value)
-
-# Пример выполнения кода
-h1 = House('ЖК Эльбрус', 10)
-h2 = House('ЖК Акация', 20)
-
-print(h1)  # Вывод информации о первом доме
-print(h2)  # Вывод информации о втором доме
-
-print(h1 == h2)  # Сравнение по количеству этажей (__eq__)
-
-h1 = h1 + 10  # Увеличение этажей первого дома на 10 (__add__)
-print(h1)  # Вывод информации о первом доме после увеличения
-print(h1 == h2)  # Сравнение по количеству этажей (__eq__)
-
-h1 += 10  # Увеличение этажей первого дома на 10 с помощью __iadd__
-print(h1)  # Вывод информации о первом доме после увеличения
-
-h2 = 10 + h2  # Увеличение этажей второго дома на 10 с помощью __radd__
-print(h2)  # Вывод информации о втором доме после увеличения
-
-print(h1 > h2)  # Сравнение по количеству этажей (__gt__)
-print(h1 >= h2)  # Сравнение по количеству этажей (__ge__)
-print(h1 < h2)  # Сравнение по количеству этажей (__lt__)
-print(h1 <= h2)  # Сравнение по количеству этажей (__le__)
-print(h1 != h2)  # Сравнение по количеству этажей (__ne__)
+print(s1.get_products())
